@@ -1,8 +1,13 @@
-FROM python:3.11
+FROM python:3.9
 
 ENV PYTHONUNBUFFERED=1
 
+ARG DEV=false
+
 COPY ./requirements.txt /tmp/requirements.txt
+
+# In case we want to use Flake8 for linting
+COPY ./requirements.dev.txt /tmp/requirements.dev.txt
 
 COPY ./app /app
 
@@ -18,6 +23,9 @@ RUN /py/bin/pip install --upgrade pip
 
 # Install requirements
 RUN /py/bin/pip install -r /tmp/requirements.txt
+
+# Only using flake8 if DEV purposes
+RUN if [ $DEV = "true" ]; then /py/bin/pip install -r /tmp/requirements.dev.txt ; fi
 
 # Remove non-needed files in the container
 RUN rm -rf /tmp
